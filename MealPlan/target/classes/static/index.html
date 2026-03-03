@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>MealPlan Web Client</title>
+
+  <!-- Bootstrap CSS (CDN) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">MealPlan UI</a>
+      <div class="collapse navbar-collapse">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link active" href="#" id="tab-foods">Foods</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" id="tab-mealplans">Meal Plans</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" id="tab-groceries">Grocery Items</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+
+    <!-- Foods -->
+    <div id="pane-foods">
+      <h3>Foods</h3>
+
+      <div class="row">
+        <div class="col-md-5">
+          <form id="food-form" class="card p-3 mb-3">
+            <input type="hidden" id="food-id">
+            <div class="mb-2">
+              <label class="form-label">Name</label>
+              <input id="food-name" class="form-control" placeholder="e.g. Chicken Breast">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Cost Per Unit</label>
+              <input id="food-cost" class="form-control" placeholder="e.g. 0.0025">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Unit Type</label>
+              <input id="food-unit" class="form-control" placeholder="e.g. gram or serving">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Calories per 100g</label>
+              <input id="food-cal" class="form-control" placeholder="e.g. 165">
+            </div>
+            <div class="d-flex gap-2">
+              <button id="food-save" class="btn btn-success">Save</button>
+              <button id="food-new" class="btn btn-outline-secondary">New</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="col-md-7">
+          <div class="mb-2 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">All Foods</h5>
+            <button id="food-refresh" class="btn btn-sm btn-outline-primary">Refresh</button>
+          </div>
+
+          <table class="table table-sm table-striped" id="food-table">
+            <thead>
+              <tr><th>ID</th><th>Name</th><th>Cost</th><th>Unit</th><th>kcal/100g</th><th></th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Meal Plans -->
+    <div id="pane-mealplans" class="d-none">
+      <h3>Meal Plans</h3>
+
+      <div class="row">
+        <div class="col-md-5">
+          <form id="plan-form" class="card p-3 mb-3">
+            <input type="hidden" id="plan-id">
+            <div class="mb-2">
+              <label class="form-label">Name</label>
+              <input id="plan-name" class="form-control" placeholder="e.g. Bulking">
+            </div>
+            <div class="mb-2">
+              <label class="form-label">Description</label>
+              <textarea id="plan-desc" class="form-control" rows="3"></textarea>
+            </div>
+            <div class="d-flex gap-2">
+              <button id="plan-save" class="btn btn-success">Save</button>
+              <button id="plan-new" class="btn btn-outline-secondary">New</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="col-md-7">
+          <div class="mb-2 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">All Meal Plans</h5>
+            <button id="plan-refresh" class="btn btn-sm btn-outline-primary">Refresh</button>
+          </div>
+
+          <table class="table table-sm table-striped" id="plan-table">
+            <thead>
+              <tr><th>ID</th><th>Name</th><th>Description</th><th></th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Grocery Items -->
+    <div id="pane-groceries" class="d-none">
+      <h3>Grocery Items</h3>
+
+      <div class="row">
+        <div class="col-md-5">
+          <form id="grocery-form" class="card p-3 mb-3">
+            <input type="hidden" id="grocery-id">
+
+            <div class="mb-2">
+              <label class="form-label">Food</label>
+              <select id="grocery-food" class="form-control"></select>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Meal Plan (optional)</label>
+              <select id="grocery-plan" class="form-control">
+                <option value="">(none)</option>
+              </select>
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Cost</label>
+              <input id="grocery-cost" class="form-control" placeholder="e.g. 10.5">
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Quantity</label>
+              <input id="grocery-qty" class="form-control" placeholder="e.g. 1000">
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Unit</label>
+              <input id="grocery-unit" class="form-control" placeholder="e.g. gram">
+            </div>
+
+            <div class="mb-2">
+              <label class="form-label">Frequency</label>
+              <select id="grocery-freq" class="form-control">
+                <option>weekly</option>
+                <option>biweekly</option>
+                <option>monthly</option>
+                <option>once</option>
+              </select>
+            </div>
+
+            <div class="d-flex gap-2">
+              <button id="grocery-save" class="btn btn-success">Save</button>
+              <button id="grocery-new" class="btn btn-outline-secondary">New</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="col-md-7">
+          <div class="mb-2 d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">All Grocery Items</h5>
+            <button id="grocery-refresh" class="btn btn-sm btn-outline-primary">Refresh</button>
+          </div>
+
+          <table class="table table-sm table-striped" id="grocery-table">
+            <thead>
+              <tr><th>ID</th><th>Food</th><th>Plan</th><th>Cost</th><th>Qty</th><th>Unit</th><th>Freq</th><th></th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div> <!-- container -->
+
+  <!-- Bootstrap JS & Popper (CDN) -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script src="./app.js"></script>
+</body>
+</html>

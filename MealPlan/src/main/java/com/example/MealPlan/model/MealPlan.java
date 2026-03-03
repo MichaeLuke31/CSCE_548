@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+
 
 @Entity
 @Table(name = "meal_plans")
@@ -18,7 +21,10 @@ public class MealPlan {
 
     // One-to-many relationship: a MealPlan has many MealPlanItems
     @OneToMany(mappedBy = "mealPlan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
     private List<MealPlanItem> items = new ArrayList<>();
+    
+    
 
     public MealPlan() {}
 

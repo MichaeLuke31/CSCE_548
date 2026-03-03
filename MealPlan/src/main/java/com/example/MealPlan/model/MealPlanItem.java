@@ -2,6 +2,7 @@ package com.example.MealPlan.model;
 
 import jakarta.persistence.*;
 import java.util.Objects;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "meal_plan_items",
@@ -24,6 +25,7 @@ public class MealPlanItem {
     // Item belongs to a MealPlan
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "meal_plan_id")
+    @JsonBackReference
     private MealPlan mealPlan;
 
     // Item refers to a Food
