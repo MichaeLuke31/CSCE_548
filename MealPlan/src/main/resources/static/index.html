@@ -2,189 +2,336 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <title>MealPlan Web Client</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Simple Meal Planner Admin</title>
 
-  <!-- Bootstrap CSS (CDN) -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap (CDN is fine for simple frontends; replace if you need offline) -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary mb-3">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="#">MealPlan UI</a>
-      <div class="collapse navbar-collapse">
-        <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link active" href="#" id="tab-foods">Foods</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" id="tab-mealplans">Meal Plans</a></li>
-          <li class="nav-item"><a class="nav-link" href="#" id="tab-groceries">Grocery Items</a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+<body class="bg-light">
 
-  <div class="container">
+<div class="container py-4">
+  <header class="mb-4">
+    <h1 class="h3">Meal Planner Client</h1>
+    <p class="text-muted">Welcome to the Meal Planner. Use the tabs below to create, edit, or delete items.</p>
+  </header>
 
-    <!-- Foods -->
-    <div id="pane-foods">
-      <h3>Foods</h3>
+  <!-- Tab navigation -->
+  <ul class="nav nav-tabs mb-3" id="mainTabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button class="nav-link active" id="foods-tab" data-bs-toggle="tab" data-bs-target="#foods" type="button">Foods</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="mealplans-tab" data-bs-toggle="tab" data-bs-target="#mealplans" type="button">Meal Plans</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="mealplanitems-tab" data-bs-toggle="tab" data-bs-target="#mealplanitems" type="button">Meal Plan Items</button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button class="nav-link" id="grocery-tab" data-bs-toggle="tab" data-bs-target="#grocery" type="button">Grocery Items</button>
+    </li>
+  </ul>
 
+  <div class="tab-content">
+
+    <!-- Foods Tab -->
+    <div class="tab-pane fade show active" id="foods">
       <div class="row">
-        <div class="col-md-5">
-          <form id="food-form" class="card p-3 mb-3">
-            <input type="hidden" id="food-id">
-            <div class="mb-2">
-              <label class="form-label">Name</label>
-              <input id="food-name" class="form-control" placeholder="e.g. Chicken Breast">
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Cost Per Unit</label>
-              <input id="food-cost" class="form-control" placeholder="e.g. 0.0025">
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Unit Type</label>
-              <input id="food-unit" class="form-control" placeholder="e.g. gram or serving">
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Calories per 100g</label>
-              <input id="food-cal" class="form-control" placeholder="e.g. 165">
-            </div>
-            <div class="d-flex gap-2">
-              <button id="food-save" class="btn btn-success">Save</button>
-              <button id="food-new" class="btn btn-outline-secondary">New</button>
-            </div>
-          </form>
-        </div>
+        <div class="col-lg-5">
+          <div class="card mb-3">
+            <div class="card-header">Create / Edit Food</div>
+            <div class="card-body">
+              <form id="foodForm">
+                <input type="hidden" id="foodId">
+                <div class="mb-2">
+                  <label class="form-label">Name</label>
+                  <input id="foodName" class="form-control" required>
+                </div>
+                <div class="row gx-2">
+                  <div class="col">
+                    <label class="form-label">Cost per unit</label>
+                    <input id="foodCost" type="number" step="0.01" class="form-control" required>
+                  </div>
+                  <div class="col">
+                    <label class="form-label">Unit type</label>
+                    <input id="foodUnitType" class="form-control" placeholder="e.g., gram, piece">
+                  </div>
+                </div>
+                <div class="mb-2 mt-2">
+                  <label class="form-label">Calories per 100g</label>
+                  <input id="foodCalories" type="number" step="0.1" class="form-control">
+                </div>
 
-        <div class="col-md-7">
-          <div class="mb-2 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">All Foods</h5>
-            <button id="food-refresh" class="btn btn-sm btn-outline-primary">Refresh</button>
+                <fieldset class="border rounded-2 p-2 mb-2">
+                  <legend class="small">Nutrients (per 100g)</legend>
+                  <div class="row gx-2">
+                    <div class="col">
+                      <label class="form-label">Protein (g)</label>
+                      <input id="nutProtein" type="number" step="0.1" class="form-control">
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Carbs (g)</label>
+                      <input id="nutCarbs" type="number" step="0.1" class="form-control">
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Fat (g)</label>
+                      <input id="nutFat" type="number" step="0.1" class="form-control">
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Fiber (g)</label>
+                      <input id="nutFiber" type="number" step="0.1" class="form-control">
+                    </div>
+                  </div>
+                  <div class="row gx-2 mt-2">
+                    <div class="col">
+                      <label class="form-label">Vit A (%)</label>
+                      <input id="nutA" type="number" step="0.1" class="form-control">
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Vit B12 (%)</label>
+                      <input id="nutB12" type="number" step="0.1" class="form-control">
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Vit B9 (%)</label>
+                      <input id="nutB9" type="number" step="0.1" class="form-control">
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Vit B6 (%)</label>
+                      <input id="nutB6" type="number" step="0.1" class="form-control">
+                    </div>
+                  </div>
+                  <div class="row gx-2 mt-2">
+                    <div class="col">
+                      <label class="form-label">Vit C (%)</label>
+                      <input id="nutC" type="number" step="0.1" class="form-control">
+                    </div>
+                    <div class="col">
+                      <label class="form-label">Vit D (%)</label>
+                      <input id="nutD" type="number" step="0.1" class="form-control">
+                    </div>
+                  </div>
+                </fieldset>
+
+                <div class="d-flex gap-2">
+                  <button type="submit" class="btn btn-primary" id="foodSaveBtn">Save</button>
+                  <button type="button" class="btn btn-outline-secondary" id="foodResetBtn">Reset</button>
+                </div>
+                <div id="foodMsg" class="mt-2 text-muted small"></div>
+              </form>
+            </div>
           </div>
-
-          <table class="table table-sm table-striped" id="food-table">
-            <thead>
-              <tr><th>ID</th><th>Name</th><th>Cost</th><th>Unit</th><th>kcal/100g</th><th></th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
         </div>
+
+        <div class="col-lg-7">
+          <div class="card">
+            <div class="card-header">Foods</div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-sm mb-0" id="foodsTable">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Name</th><th>Unit</th><th>Cost</th><th>Calories</th><th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <!-- Meal Plans -->
-    <div id="pane-mealplans" class="d-none">
-      <h3>Meal Plans</h3>
-
+    <!-- Meal Plans Tab -->
+    <div class="tab-pane fade" id="mealplans">
       <div class="row">
-        <div class="col-md-5">
-          <form id="plan-form" class="card p-3 mb-3">
-            <input type="hidden" id="plan-id">
-            <div class="mb-2">
-              <label class="form-label">Name</label>
-              <input id="plan-name" class="form-control" placeholder="e.g. Bulking">
-            </div>
-            <div class="mb-2">
-              <label class="form-label">Description</label>
-              <textarea id="plan-desc" class="form-control" rows="3"></textarea>
-            </div>
-            <div class="d-flex gap-2">
-              <button id="plan-save" class="btn btn-success">Save</button>
-              <button id="plan-new" class="btn btn-outline-secondary">New</button>
-            </div>
-          </form>
-        </div>
+        <div class="col-lg-5">
+          <div class="card mb-3">
+            <div class="card-header">Create / Edit Meal Plan</div>
+            <div class="card-body">
+              <form id="mealPlanForm">
+                <input type="hidden" id="mealPlanId">
+                <div class="mb-2">
+                  <label class="form-label">Name</label>
+                  <input id="mealPlanName" class="form-control" required>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Description</label>
+                  <textarea id="mealPlanDesc" class="form-control" rows="3"></textarea>
+                </div>
 
-        <div class="col-md-7">
-          <div class="mb-2 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">All Meal Plans</h5>
-            <button id="plan-refresh" class="btn btn-sm btn-outline-primary">Refresh</button>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-primary" type="submit">Save</button>
+                  <button type="button" class="btn btn-outline-secondary" id="mealPlanResetBtn">Reset</button>
+                </div>
+                <div id="mealPlanMsg" class="mt-2 text-muted small"></div>
+              </form>
+            </div>
           </div>
-
-          <table class="table table-sm table-striped" id="plan-table">
-            <thead>
-              <tr><th>ID</th><th>Name</th><th>Description</th><th></th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
         </div>
+
+        <div class="col-lg-7">
+          <div class="card">
+            <div class="card-header">Meal Plans</div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-sm mb-0" id="mealPlansTable">
+                  <thead class="table-light">
+                    <tr><th>Name</th><th>Description</th><th>Actions</th></tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
-    <!-- Grocery Items -->
-    <div id="pane-groceries" class="d-none">
-      <h3>Grocery Items</h3>
-
+    <!-- Meal Plan Items Tab -->
+    <div class="tab-pane fade" id="mealplanitems">
       <div class="row">
-        <div class="col-md-5">
-          <form id="grocery-form" class="card p-3 mb-3">
-            <input type="hidden" id="grocery-id">
+        <div class="col-lg-5">
+          <div class="card mb-3">
+            <div class="card-header">Create / Edit Meal Plan Item</div>
+            <div class="card-body">
+              <form id="mealPlanItemForm">
+                <input type="hidden" id="mpiId">
+                <div class="mb-2">
+                  <label class="form-label">Meal Plan</label>
+                  <select id="mpiMealPlan" class="form-select" required></select>
+                </div>
 
-            <div class="mb-2">
-              <label class="form-label">Food</label>
-              <select id="grocery-food" class="form-control"></select>
+                <div class="mb-2">
+                  <label class="form-label">Day of week</label>
+                  <select id="mpiDay" class="form-select" required>
+                    <option>1</option><option>2</option><option>3</option><option>4</option>
+                    <option>5</option><option>6</option><option>7</option>
+                  </select>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label">Meal type</label>
+                  <select id="mpiMealType" class="form-select" required>
+                    <option>Breakfast</option><option>Lunch</option><option>Dinner</option><option>Snack</option>
+                  </select>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label">Food</label>
+                  <select id="mpiFood" class="form-select" required></select>
+                </div>
+
+                <div class="mb-2">
+                  <label class="form-label">Quantity (grams)</label>
+                  <input id="mpiQuantity" type="number" step="1" class="form-control" required>
+                </div>
+
+                <div class="d-flex gap-2">
+                  <button class="btn btn-primary" type="submit">Save</button>
+                  <button type="button" class="btn btn-outline-secondary" id="mpiResetBtn">Reset</button>
+                </div>
+                <div id="mpiMsg" class="mt-2 text-muted small"></div>
+              </form>
             </div>
-
-            <div class="mb-2">
-              <label class="form-label">Meal Plan (optional)</label>
-              <select id="grocery-plan" class="form-control">
-                <option value="">(none)</option>
-              </select>
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label">Cost</label>
-              <input id="grocery-cost" class="form-control" placeholder="e.g. 10.5">
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label">Quantity</label>
-              <input id="grocery-qty" class="form-control" placeholder="e.g. 1000">
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label">Unit</label>
-              <input id="grocery-unit" class="form-control" placeholder="e.g. gram">
-            </div>
-
-            <div class="mb-2">
-              <label class="form-label">Frequency</label>
-              <select id="grocery-freq" class="form-control">
-                <option>weekly</option>
-                <option>biweekly</option>
-                <option>monthly</option>
-                <option>once</option>
-              </select>
-            </div>
-
-            <div class="d-flex gap-2">
-              <button id="grocery-save" class="btn btn-success">Save</button>
-              <button id="grocery-new" class="btn btn-outline-secondary">New</button>
-            </div>
-          </form>
-        </div>
-
-        <div class="col-md-7">
-          <div class="mb-2 d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">All Grocery Items</h5>
-            <button id="grocery-refresh" class="btn btn-sm btn-outline-primary">Refresh</button>
           </div>
-
-          <table class="table table-sm table-striped" id="grocery-table">
-            <thead>
-              <tr><th>ID</th><th>Food</th><th>Plan</th><th>Cost</th><th>Qty</th><th>Unit</th><th>Freq</th><th></th></tr>
-            </thead>
-            <tbody></tbody>
-          </table>
         </div>
+
+        <div class="col-lg-7">
+          <div class="card">
+            <div class="card-header">Meal Plan Items</div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-sm mb-0" id="mpiTable">
+                  <thead class="table-light">
+                    <tr><th>Plan</th><th>Day</th><th>Meal</th><th>Food</th><th>Grams</th><th>Actions</th></tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
-  </div> <!-- container -->
+    <!-- Grocery Tab -->
+    <div class="tab-pane fade" id="grocery">
+      <div class="row">
+        <div class="col-lg-5">
+          <div class="card mb-3">
+            <div class="card-header">Create / Edit Grocery Item</div>
+            <div class="card-body">
+              <form id="groceryForm">
+                <input type="hidden" id="groceryId">
+                <div class="mb-2">
+                  <label class="form-label">Food</label>
+                  <select id="groceryFood" class="form-select" required></select>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Associated Meal Plan</label>
+                  <select id="groceryMealPlan" class="form-select" required></select>
+                </div>
+                <div class="row gx-2">
+                  <div class="col">
+                    <label class="form-label">Quantity</label>
+                    <input id="groceryQty" type="number" step="0.01" class="form-control" required>
+                  </div>
+                  <div class="col">
+                    <label class="form-label">Unit</label>
+                    <input id="groceryUnit" class="form-control" placeholder="e.g., g, kg, pack" required>
+                  </div>
+                </div>
+                <div class="mb-2 mt-2">
+                  <label class="form-label">Cost</label>
+                  <input id="groceryCost" type="number" step="0.01" class="form-control" required>
+                </div>
+                <div class="mb-2">
+                  <label class="form-label">Purchase frequency</label>
+                  <input id="groceryFreq" class="form-control" placeholder="e.g., weekly, monthly">
+                </div>
 
-  <!-- Bootstrap JS & Popper (CDN) -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+                <div class="d-flex gap-2">
+                  <button class="btn btn-primary" type="submit">Save</button>
+                  <button type="button" class="btn btn-outline-secondary" id="groceryResetBtn">Reset</button>
+                </div>
+                <div id="groceryMsg" class="mt-2 text-muted small"></div>
+              </form>
+            </div>
+          </div>
+        </div>
 
-  <script src="./app.js"></script>
+        <div class="col-lg-7">
+          <div class="card">
+            <div class="card-header">Grocery Items</div>
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-sm mb-0" id="groceryTable">
+                  <thead class="table-light">
+                    <tr><th>Food</th><th>Qty</th><th>Unit</th><th>Cost</th><th>Plan</th><th>Actions</th></tr>
+                  </thead>
+                  <tbody></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <footer class="mt-4 text-muted small"></footer>
+</div>
+
+<!-- Bootstrap JS (for tabs) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

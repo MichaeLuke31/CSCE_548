@@ -1,7 +1,7 @@
 package com.example.MealPlan.controller;
 
-import com.example.MealPlan.dto.GroceryRequest;
-import com.example.MealPlan.dto.GroceryDTO;
+import com.example.MealPlan.dto.GroceryItemDTO;
+import com.example.MealPlan.dto.FoodSummaryDTO;
 import com.example.MealPlan.model.GroceryItem;
 import com.example.MealPlan.model.Food;
 import com.example.MealPlan.model.MealPlan;
@@ -10,8 +10,10 @@ import com.example.MealPlan.service.MealPlanService;
 import com.example.MealPlan.service.GroceryItemService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.Optional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/groceries")
@@ -29,69 +31,73 @@ public class GroceryItemController {
         this.mealPlanService = mealPlanService;
     }
 
+    /**
+     * Create or update a grocery item.
+     * Accepts GroceryItemDTO and returns GroceryItemDTO.
+     */
     @PostMapping
-    public ResponseEntity<?> save(@RequestBody GroceryRequest req) {
-        // validate required foodId
-        if (req.foodId == null) {
-            return ResponseEntity.badRequest().body("foodId is required");
+    public ResponseEntity<?> save(@RequestBody GroceryItemDTO dto) {
+        // Basic validation: require food reference in DTO
+        if (dto.getFood() == null || dto.getFood().getId() == null) {
+            return ResponseEntity.badRequest().body("food.id is required");
         }
 
-        Optional<Food> foodOpt = foodService.getById(req.foodId);
+        // Convert DTO -> shallow entity (sets simple fields and id if present)
+        GroceryItem toSave = dto.toEntityReference();
+
+        // Resolve and attach a managed Food entity (prevent detached/shallow issues)
+        Long foodId = dto.getFood().getId();
+        Optional<Food> foodOpt = foodService.getById(foodId);
         if (foodOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("foodId " + req.foodId + " not found");
+            return ResponseEntity.badRequest().body("foodId " + foodId + " not found");
         }
-        Food food = foodOpt.get();
+        toSave.setFood(foodOpt.get());
 
-        MealPlan mealPlan = null;
-        if (req.mealPlanId != null) {
-            Optional<MealPlan> mpOpt = mealPlanService.getById(req.mealPlanId);
+        // If DTO supplied a mealPlanId (or nested mealPlan summary), resolve it
+        if (dto.getMealPlanId() != null) {
+            Optional<MealPlan> mpOpt = mealPlanService.getById(dto.getMealPlanId());
             if (mpOpt.isEmpty()) {
-                return ResponseEntity.badRequest().body("mealPlanId " + req.mealPlanId + " not found");
+                return ResponseEntity.badRequest().body("mealPlanId " + dto.getMealPlanId() + " not found");
             }
-            mealPlan = mpOpt.get();
+            toSave.setMealPlan(mpOpt.get());
+        } else {
+            toSave.setMealPlan(null);
         }
 
-        GroceryItem g = new GroceryItem();
-        // if updating, set id so save() will update
-        if (req.id != null) g.setId(req.id);
+        // Save via service (service may perform merge logic for updates)
+        GroceryItem saved = groceryService.save(toSave);
 
-        g.setFood(food);
-        g.setMealPlan(mealPlan);
-        g.setCost(req.cost);
-        g.setQuantity(req.quantity);
-        g.setUnit(req.unit);
-        g.setPurchaseFrequency(req.purchaseFrequency);
-
-        GroceryItem saved = groceryService.save(g);
-
-        // map saved to GroceryDTO for consistent response shape (frontend expects fields like foodId)
-        GroceryDTO dto = new GroceryDTO();
-        dto.id = saved.getId();
-        dto.foodId = saved.getFood() != null ? saved.getFood().getId() : null;
-        dto.foodName = saved.getFood() != null ? saved.getFood().getName() : null;
-        dto.mealPlanId = saved.getMealPlan() != null ? saved.getMealPlan().getId() : null;
-        dto.mealPlanName = saved.getMealPlan() != null ? saved.getMealPlan().getName() : null;
-        dto.cost = saved.getCost();
-        dto.quantity = saved.getQuantity();
-        dto.unit = saved.getUnit();
-        dto.purchaseFrequency = saved.getPurchaseFrequency();
-
-        return ResponseEntity.ok(dto);
+        // Return stable DTO shape to client
+        GroceryItemDTO resp = GroceryItemDTO.fromEntity(saved);
+        return ResponseEntity.ok(resp);
     }
 
+    /**
+     * GET single grocery item as DTO
+     */
     @GetMapping("/{id}")
-    public ResponseEntity<GroceryItem> getById(@PathVariable Long id) {
-        return groceryService.getById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<GroceryItemDTO> getById(@PathVariable Long id) {
+        return groceryService.getById(id)
+                .map(GroceryItemDTO::fromEntity)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    /**
+     * GET all grocery items as DTO list
+     */
     @GetMapping
-    public ResponseEntity<List<GroceryItem>> getAll() {
-        return ResponseEntity.ok(groceryService.getAll());
+    public ResponseEntity<List<GroceryItemDTO>> getAll() {
+        List<GroceryItemDTO> list = groceryService.getAll()
+                .stream()
+                .map(GroceryItemDTO::fromEntity)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(list);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-    	groceryService.delete(id);
+        groceryService.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

@@ -1,0 +1,15 @@
+/* styles.css - small custom styles to keep the UI clean and readable */
+
+body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; }
+
+.card-header { font-weight: 600; }
+.table td, .table th { vertical-align: middle; }
+small.text-muted { font-size: .8rem; }
+
+/* subtle fixed width for action buttons column */
+.table td.actions { width: 170px; }
+
+/* mobile-friendly form spacing */
+@media (max-width: 767px) {
+  .card { margin-bottom: 1rem; }
+}

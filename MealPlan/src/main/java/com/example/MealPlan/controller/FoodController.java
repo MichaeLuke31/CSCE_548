@@ -1,14 +1,14 @@
 package com.example.MealPlan.controller;
 
-
+import com.example.MealPlan.dto.FoodDTO;
 import com.example.MealPlan.model.Food;
 import com.example.MealPlan.service.FoodService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/foods")
@@ -18,24 +18,34 @@ public class FoodController {
 
     public FoodController(FoodService svc) { this.svc = svc; }
 
+    // Create or update: accepts FoodDTO, returns saved FoodDTO
     @PostMapping
-    public ResponseEntity<Food> save(@RequestBody Food food) {
-        Food saved = svc.save(food);
-        return ResponseEntity.ok(saved);
+    public ResponseEntity<FoodDTO> save(@RequestBody FoodDTO foodDto) {
+        // Map DTO -> entity
+        Food toSave = foodDto.toEntity();
+        Food saved = svc.save(toSave);
+        // Map entity -> DTO for response
+        FoodDTO resp = FoodDTO.fromEntity(saved);
+        return ResponseEntity.ok(resp);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Food> getById(@PathVariable Long id) {
-        return svc.getById(id).map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<FoodDTO> getById(@PathVariable Long id) {
+        Optional<Food> opt = svc.getById(id);
+        return opt.map(f -> ResponseEntity.ok(FoodDTO.fromEntity(f)))
+                  .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @GetMapping
-    public ResponseEntity<List<Food>> getAll(@RequestParam(required = false) String name) {
+    public ResponseEntity<List<FoodDTO>> getAll(@RequestParam(required = false) String name) {
         if (name != null) {
             Optional<Food> f = svc.getByName(name);
-            return f.map(food -> ResponseEntity.ok(List.of(food))).orElseGet(() -> ResponseEntity.ok(List.of()));
+            List<FoodDTO> list = f.map(food -> List.of(FoodDTO.fromEntity(food))).orElseGet(List::of);
+            return ResponseEntity.ok(list);
         }
-        return ResponseEntity.ok(svc.getAll());
+        // map all entities to DTOs
+        List<FoodDTO> dtoList = svc.getAll().stream().map(FoodDTO::fromEntity).collect(Collectors.toList());
+        return ResponseEntity.ok(dtoList);
     }
 
     @DeleteMapping("/{id}")
