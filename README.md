@@ -75,7 +75,7 @@ If the application starts successfully, you should see a message similar to:
 
 Started in X.XXX seconds in the Eclipse console.
 
-IF Application fails to connect to the database check the following:
+If Application fails to connect to the database check the following:
 
 - spring.datasource.url is correct
 - Database username and password are correct
