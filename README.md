@@ -92,10 +92,8 @@ You should now see the Meal Plan application frontend.
 ## Step 6 (Optional): Populate Database Tables
 You can populate the food and nutrients tables by:
 
-Writing SQL manually
+- Writing SQL manually using MySQL Workbench
 
-Using MySQL Workbench
+- Asking an AI assistant to generate realistic SQL seed data
 
-Asking an AI assistant to generate realistic SQL seed data
-
-This step helps populate the application with realistic food and nutrient values.
+- This step helps populate the application with realistic food and nutrient values.
