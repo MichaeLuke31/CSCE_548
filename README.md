@@ -59,7 +59,7 @@ application.properties
 spring.datasource.url=jdbc:<enter database URL here>
 spring.datasource.username=<enter user here>
 spring.datasource.password=<enter password here>
-
+```
 ## Step 4: Run the Application
 1. Navigate to:
 
