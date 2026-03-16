@@ -95,5 +95,6 @@ You can populate the food and nutrients tables by:
 - Writing SQL manually using MySQL Workbench
 
 - Asking an AI assistant to generate realistic SQL seed data
+- Or entering manually via front end
 
-- This step helps populate the application with realistic food and nutrient values.
+Now you can begin tracking your meal plans!
